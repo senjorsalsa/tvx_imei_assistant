@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 import openpyxl
+import secrets
 import xlrd
 import os
 
@@ -31,7 +32,7 @@ def start_imei_check():
     for row_num, val in enumerate(imei_managed_list, start=2):
         ws.cell(row=row_num, column=new_col_index, value=val)
     ws.column_dimensions['E'].hidden = True
-    new_file_path = os.path.splitext(path)[0] + "_updated.xlsx"
+    new_file_path = os.path.splitext(path)[0] + f"_{secrets.token_hex(nbytes=8)}.xlsx"
     wb.save(new_file_path)
 
 def get_imeis_from_file(ws) -> list | None:
@@ -84,3 +85,4 @@ btn.pack()
 btn_exit = ttk.Button(root, text="Exit", command=close_window)
 btn_exit.pack()
 root.mainloop()
+
