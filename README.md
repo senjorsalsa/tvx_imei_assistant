@@ -9,4 +9,4 @@ Start by downloading the XLS from Partner, follow below steps to do so.
 
 When you have downloaded the file, run this program and click on Choose file. Choose the file you just downloaded from Partner.
 When you select the file, the program will do the rest, it will calculate the checkdigit and append a new column to the Excel with the new data and hide the original column.
-The program will save the new updated file as 'original filename' + '_updated.xlsx'.
+The program will save the new updated file as 'original filename' + '_{random 8-bit hex value}.xlsx'.
