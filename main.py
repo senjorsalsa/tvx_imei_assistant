@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
+from tkinter import messagebox
 import openpyxl
 import secrets
 import xlrd
@@ -34,6 +35,8 @@ def start_imei_check():
     ws.column_dimensions['E'].hidden = True
     new_file_path = os.path.splitext(path)[0] + f"_{secrets.token_hex(nbytes=8)}.xlsx"
     wb.save(new_file_path)
+    messagebox.showinfo("Success", f"File saved as {new_file_path}")
+
 
 def get_imeis_from_file(ws) -> list | None:
     col_index = 5
