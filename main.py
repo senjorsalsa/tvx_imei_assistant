@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
+from openpyxl.utils import get_column_letter
 import openpyxl
 import secrets
 import xlrd
@@ -23,27 +24,42 @@ def start_imei_check():
         for col in range(sheet.ncols):
             ws.cell(row=row+1, column=col+1, value=sheet.cell_value(row, col))
 
-    ws.insert_cols(6)
-    ws.cell(row=1, column=6, value="imei")
-    list_of_imeis = get_imeis_from_file(ws)
+    
+    list_of_imeis, col_index = get_imeis_from_file(ws)
+    if not list_of_imeis:
+        messagebox.showerror("Error", "No IMEI column found in the file.")
+        return
+
     imei_managed_list = [correct_imei_check_digit(imei) for imei in list_of_imeis]
 
-    new_col_index = 6
+    new_col_index = col_index + 1
 
+    ws.insert_cols(new_col_index)
+    ws.cell(row=1, column=new_col_index, value="imei")  
+    
     for row_num, val in enumerate(imei_managed_list, start=2):
         ws.cell(row=row_num, column=new_col_index, value=val)
-    ws.column_dimensions['E'].hidden = True
+    
+    ws.column_dimensions[get_column_letter(col_index)].hidden = True
     new_file_path = os.path.splitext(path)[0] + f"_{secrets.token_hex(nbytes=8)}.xlsx"
     wb.save(new_file_path)
     messagebox.showinfo("Success", f"File saved as {new_file_path}")
 
 
+def get_imei_column_index(ws) -> int | None:
+    for col in range(1, ws.max_column + 1):
+        header = str(ws.cell(row=1, column=col).value).strip().lower()
+        if header == "imei":
+            return col
+    return None
+
+
 def get_imeis_from_file(ws) -> list | None:
-    col_index = 5
+    col_index = get_imei_column_index(ws)
     values = [ws.cell(row=i, column=col_index).value for i in range(2, ws.max_row+1)]
     if not values:
         return None
-    return values
+    return values, col_index
 
 
 def correct_imei_check_digit(imei: str) -> str | None:
@@ -88,4 +104,3 @@ btn.pack()
 btn_exit = ttk.Button(root, text="Exit", command=close_window)
 btn_exit.pack()
 root.mainloop()
-
